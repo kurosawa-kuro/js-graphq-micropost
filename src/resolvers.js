@@ -1,5 +1,8 @@
 const { users, microposts, categories } = require('./data');
 const { randomUUID } = require('crypto');
+const User = require('./resolvers/User');
+const Micropost = require('./resolvers/Micropost');
+const Category = require('./resolvers/Category');
 
 exports.resolvers = {
   Query: {
@@ -14,14 +17,7 @@ exports.resolvers = {
       return newPost;
     }
   },
-  User: {
-    posts: (parent) => microposts.filter(p => p.authorId === parent.id)
-  },
-  Micropost: {
-    author: (parent) => users.find(u => u.id === parent.authorId),
-    categories: (parent) => categories.filter(c => parent.categoryIds.includes(c.id))
-  },
-  Category: {
-    posts: (parent) => microposts.filter(p => p.categoryIds.includes(parent.id))
-  }
+  User,
+  Micropost,
+  Category
 };
