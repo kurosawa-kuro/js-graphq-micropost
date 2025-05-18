@@ -1,45 +1,103 @@
-# js-graphq Hello World Example
+# js-graphq Micropost Example
 
-This project demonstrates a minimal Express + Apollo Server (GraphQL) setup.
+このプロジェクトは Express + Apollo Server (GraphQL) による「Micropost」サンプル実装です。
 
-## 1. Project Setup
+## 1. セットアップ
 
 ```bash
 npm install
 ```
 
-## 2. Start the Server
+## 2. サーバ起動
 
 ```bash
-node src/app.js
+npm run dev
 ```
 
-## 3. Access GraphQL Playground
+## 3. GraphQL Playground
 
-Open your browser and navigate to:
+ブラウザで以下にアクセス:
 
 ```
 http://localhost:4000/graphql
 ```
 
-## 4. Example Query
+## 4. サンプルクエリ
 
-```
+**全マイクロポスト取得:**
+```graphql
 query {
-  hello
-}
-```
-
-## 5. Expected Response
-
-```
-{
-  "data": {
-    "hello": "Hello World!"
+  listMicroposts {
+    id
+    title
+    author { name }
+    categories { name }
   }
 }
 ```
 
----
+**マイクロポスト追加:**
+```graphql
+mutation {
+  addMicropost(input:{
+    title: "Mem-only GraphQL",
+    body: "Works fine!",
+    authorId: "u2",
+    categoryIds: ["c1", "c2"]
+  }) {
+    id
+    title
+  }
+}
+```
 
-// 日本語補足: このREADMEはセットアップから動作確認までを網羅しています。
+## 5. レスポンス例
+
+```json
+{
+  "data": {
+    "listMicroposts": [
+      {
+        "id": "p1",
+        "title": "Hello GraphQL",
+        "author": { "name": "Alice" },
+        "categories": [ { "name": "GraphQL" } ]
+      }
+    ]
+  }
+}
+```
+
+## 6. curl でのリクエスト例
+
+GraphQLエンドポイントはPOSTリクエストで受け付けます。
+
+### マイクロポスト一覧取得（listMicroposts クエリ）
+
+```bash
+curl -X POST http://localhost:4000/graphql \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "query { listMicroposts { id title author { name } categories { name } } }"
+  }'
+```
+
+### マイクロポスト追加（addMicropost ミューテーション）
+
+```bash
+curl -X POST http://localhost:4000/graphql \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "mutation($input: MicropostInput!) { addMicropost(input: $input) { id title } }",
+    "variables": {
+      "input": {
+        "title": "Mem-only GraphQL",
+        "body": "Works fine!",
+        "authorId": "u2",
+        "categoryIds": ["c1", "c2"]
+      }
+    }
+  }'
+```
+
+// 日本語補足: curlコマンドはREST API同様にGraphQLエンドポイントへ直接リクエストできます。JSONの"query"キーにGraphQLクエリ文字列を指定し、必要に応じて"variables"も渡します。

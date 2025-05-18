@@ -1,0 +1,36 @@
+type User {
+  id: ID!
+  name: String!
+  posts: [Micropost!]!
+}
+
+type Micropost {
+  id: ID!
+  title: String!
+  body: String!
+  author: User!
+  categories: [Category!]!
+}
+
+type Category {
+  id: ID!
+  name: String!
+  posts: [Micropost!]!
+}
+
+type Query {
+  listUsers: [User!]!
+  listMicroposts: [Micropost!]!
+  listCategories: [Category!]!
+}
+
+input MicropostInput {
+  title: String!
+  body: String!
+  authorId: ID!
+  categoryIds: [ID!]!
+}
+
+type Mutation {
+  addMicropost(input: MicropostInput!): Micropost!
+}
